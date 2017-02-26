@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Django Role Permissions</title>
+</head>
+<html>
+    <h1>Django Role Permissions</h1>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% load permission_tags %}
+
+    {% if user.is_authenticated %}
+        <p>Hello {{ user.username }} <a href="{% url 'logout' %}">Logout</a> </p>
+
+        <p>
+            Your role is : {{ role }}
+        </p>
+
+        <p>
+            Your permissions are :
+            {% for permission in permissions %}
+                {{ permission }}
+                {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+
+        <p>
+            {% if user|has_role:'buyer,seller' %}
+                <a href="{% url 'website:visitor' %}">Become Visitor</a>
+            {% else %}
+                <a href="{% url 'website:buyer' %}">Become Buyer</a>
+                <a href="{% url 'website:seller' %}">Become Seller</a>
+            {% endif %}
+        </p>
+
+        {% if user|has_role:'buyer' %}
+            <p>
+                <a href="{% url 'website:place_bid' %}">Place Bid</a>
+            </p>
+            <p>
+                <a href="{% url 'website:modify_bid' %}">Modify Bid</a>
+            </p>
+        {% elif user|has_role:'seller' %}
+            <p>
+                <a href="{% url 'website:make_offer' %}">Make Offer</a>
+            </p>
+            <p>
+                <a href="{% url 'website:modify_offer' %}">Modify Offer</a>
+            </p>
+        {% endif %}
+
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a></p>
+    {% endif %}
+
+</html>
